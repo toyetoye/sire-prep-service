@@ -28,6 +28,46 @@ a { color: var(--accent); text-decoration: none; }
 .login-box button:disabled { opacity: 0.6; cursor: wait; }
 .login-error { background: #fef2f2; color: var(--critical); padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.8rem; border: 1px solid #fecaca; }
 .login-footer { font-size: 0.78rem; color: var(--muted); margin-top: 1rem; text-align: center; }
+.login-tabs { display: flex; gap: 0; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border); }
+.login-tab { flex: 1; background: none; border: none; padding: 0.6rem 0.5rem; cursor: pointer; font-size: 0.85rem; color: var(--muted); border-bottom: 2px solid transparent; width: auto; margin-bottom: 0; border-radius: 0; }
+.login-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.login-hint { color: var(--muted); margin-bottom: 1rem; font-size: 0.85rem; }
+
+/* Vessel switcher in header */
+.vessel-switcher { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.4rem 0.7rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+.vessel-switcher option { color: var(--text); background: white; }
+.role-badge { background: var(--warn); color: white; padding: 0.2rem 0.55rem; border-radius: 10px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 0.4rem; }
+.role-badge.super { background: var(--critical); }
+.role-badge.master { background: var(--info); }
+
+/* Admin view */
+.admin-grid { display: grid; gap: 1.25rem; }
+.admin-card { background: var(--card); border-radius: 10px; padding: 1.25rem 1.5rem; }
+.admin-card h3 { font-size: 1.05rem; margin-bottom: 0.7rem; }
+.admin-card .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+.admin-fleet-table, .admin-users-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.admin-fleet-table th, .admin-fleet-table td, .admin-users-table th, .admin-users-table td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); }
+.admin-fleet-table th, .admin-users-table th { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; background: var(--soft-bg); }
+.admin-fleet-table tr:hover, .admin-users-table tr:hover { background: var(--soft-bg); }
+.admin-progress { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 130px; }
+.admin-progress .bar { width: 80px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.admin-progress .bar > div { height: 100%; background: var(--ok); }
+.admin-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.admin-actions button { background: var(--card); border: 1px solid var(--border); color: var(--primary); padding: 0.3rem 0.65rem; border-radius: 5px; cursor: pointer; font-size: 0.78rem; }
+.admin-actions button:hover { background: var(--bg); }
+.admin-actions button.danger { color: var(--critical); border-color: #fecaca; }
+.admin-actions button.danger:hover { background: #fef2f2; }
+.add-user-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem 0.8rem; align-items: end; }
+.add-user-form .field { display: flex; flex-direction: column; gap: 0.2rem; }
+.add-user-form label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.add-user-form input, .add-user-form select { padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 5px; font-size: 0.88rem; background: white; }
+.add-user-form button { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.88rem; height: fit-content; }
+.add-user-form button:hover { background: var(--primary-dark); }
+.pill-role { padding: 0.18rem 0.55rem; border-radius: 10px; font-size: 0.72rem; font-weight: 600; background: var(--soft-bg); color: var(--muted); }
+.pill-role.superintendent { background: #fee2e2; color: #991b1b; }
+.pill-role.master { background: #dbeafe; color: #1e40af; }
+.pill-role.crew { background: #f3f4f6; color: #4b5563; }
+.pill-inactive { padding: 0.18rem 0.55rem; border-radius: 10px; font-size: 0.7rem; background: #f3f4f6; color: var(--muted); }
 
 /* HEADER */
 header { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
@@ -255,16 +295,34 @@ aside h3 { font-size: 0.95rem; margin-bottom: 0.85rem; color: var(--muted); text
 <div id="loginScreen" class="login-screen">
   <div class="login-box">
     <h1>🚢 SIRE 2.0 Inspection Prep</h1>
-    <p>Multi-user inspection preparation for NSML LPG fleet. Pick your vessel, enter the shared crew password, and identify yourself so we know who ticked which box.</p>
+    <p>Multi-user inspection preparation for NSML LPG fleet.</p>
+    <div class="login-tabs">
+      <button id="tabCrew" class="login-tab active">Crew (on board)</button>
+      <button id="tabOffice" class="login-tab">Office / Superintendent</button>
+    </div>
     <div id="loginError" class="login-error hidden"></div>
-    <label>Vessel</label>
-    <select id="loginVessel"></select>
-    <label>Your Name / Rank (e.g. "Master Adeyemi" or "C/O")</label>
-    <input id="loginDisplayName" type="text" placeholder="e.g. C/O Okafor" maxlength="80" autocomplete="name">
-    <label>Vessel Password</label>
-    <input id="loginPassword" type="password" placeholder="Shared crew password" autocomplete="current-password">
-    <button id="loginBtn">Sign in</button>
-    <div class="login-footer">Forgot the password? Ask the Master. Master can change it from inside the app.</div>
+
+    <div id="crewLoginPanel">
+      <p class="login-hint">Pick your vessel, type your name + the shared vessel password.</p>
+      <label>Vessel</label>
+      <select id="loginVessel"></select>
+      <label>Your Name / Rank</label>
+      <input id="loginDisplayName" type="text" placeholder="e.g. C/O Okafor" maxlength="80" autocomplete="name">
+      <label>Vessel Password</label>
+      <input id="loginPassword" type="password" placeholder="Shared crew password" autocomplete="current-password">
+      <button id="loginBtn">Sign in</button>
+      <div class="login-footer">Forgot the password? Ask the Master or the office.</div>
+    </div>
+
+    <div id="officeLoginPanel" class="hidden">
+      <p class="login-hint">Office staff & superintendents — sign in with your individual account.</p>
+      <label>Email</label>
+      <input id="loginEmail" type="email" placeholder="you@nsml.com" autocomplete="email">
+      <label>Password</label>
+      <input id="loginUserPassword" type="password" autocomplete="current-password">
+      <button id="loginUserBtn">Sign in</button>
+      <div class="login-footer">No account? Ask your superintendent to add you.</div>
+    </div>
   </div>
 </div>
 
@@ -277,15 +335,18 @@ aside h3 { font-size: 0.95rem; margin-bottom: 0.85rem; color: var(--muted); text
         <small>Phased workflow · 318 OCIMF questions · 950 walkdowns · ~4,800 atomic checkpoints</small>
       </div>
       <div class="header-controls">
+        <select id="vesselSwitcher" class="vessel-switcher hidden" onchange="switchVessel(this.value)"></select>
         <input type="search" id="searchBox" placeholder="Search topic, equipment, evidence...">
         <div class="view-toggle">
           <button data-view="home" class="active">🏠 Home</button>
           <button data-view="walkdowns">Walkdowns</button>
           <button data-view="questions">OCIMF Reference</button>
+          <button data-view="admin" id="adminTab" class="hidden">⚙ Admin</button>
         </div>
         <span class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">synced</span></span>
         <span class="user-pill" id="userPill">
           <span id="userLabel"></span>
+          <span id="roleBadge" class="role-badge hidden"></span>
           <button onclick="doLogout()" title="Sign out">⤴</button>
         </span>
       </div>
@@ -369,9 +430,12 @@ const API = {
   get(path) { return this._req('GET', path); },
   post(path, body) { return this._req('POST', path, body); },
   patch(path, body) { return this._req('PATCH', path, body); },
+  del(path) { return this._req('DELETE', path); },
   // Convenience
   vessels() { return this.get('/api/auth/vessels'); },
   login(vessel, password, displayName) { return this.post('/api/auth/login', { vessel, password, displayName }); },
+  userLogin(email, password) { return this.post('/api/auth/user-login', { email, password }); },
+  switchVessel(vessel) { return this.post('/api/auth/switch-vessel', { vessel }); },
   logout() { return this.post('/api/auth/logout'); },
   me() { return this.get('/api/auth/me'); },
   questions() { return this.get('/api/questions'); },
@@ -381,17 +445,35 @@ const API = {
   syncStamp() { return this.get('/api/sync-stamp'); },
   patchWalkdown(id, body) { return this.patch('/api/walkdown/' + encodeURIComponent(id), body); },
   patchSubcheck(wid, scid, body) { return this.patch(`/api/walkdown/${encodeURIComponent(wid)}/subcheck/${encodeURIComponent(scid)}`, body); },
+  // Admin
+  adminUsers() { return this.get('/api/admin/users'); },
+  adminCreateUser(body) { return this.post('/api/admin/users', body); },
+  adminUpdateUser(id, body) { return this.patch('/api/admin/users/' + id, body); },
+  adminDeleteUser(id) { return this.del('/api/admin/users/' + id); },
+  adminResetPassword(id, newPassword) { return this.post('/api/admin/users/' + id + '/reset-password', { newPassword }); },
+  adminResetVesselPassword(vessel, newPassword) { return this.post('/api/admin/vessels/' + encodeURIComponent(vessel) + '/password', { newPassword }); },
+  adminFleetOverview() { return this.get('/api/admin/fleet-overview'); },
 };
 
 // ============================================================
 // Boot / auth
 // ============================================================
+let CURRENT_ROLE = 'crew';
+let CURRENT_USER_ID = null;
+let CURRENT_EMAIL = null;
+let CAN_SWITCH_VESSEL = false;
+let ALL_VESSELS = []; // populated for super to use in switcher
+
 async function boot() {
   try {
     const me = await API.me();
     if (me.authenticated) {
       CURRENT_USER = me.user;
       CURRENT_VESSEL = me.vessel;
+      CURRENT_ROLE = me.role || 'crew';
+      CURRENT_USER_ID = me.userId || null;
+      CURRENT_EMAIL = me.email || null;
+      CAN_SWITCH_VESSEL = !!me.canSwitchVessel;
       await afterLogin();
     } else {
       showLogin();
@@ -406,6 +488,7 @@ async function showLogin() {
   document.getElementById('loginScreen').classList.remove('hidden');
   try {
     const vessels = await API.vessels();
+    ALL_VESSELS = vessels;
     const sel = document.getElementById('loginVessel');
     sel.innerHTML = vessels.map(v => `<option value="${v.vessel}">${esc(v.display_name)} (${v.vessel})</option>`).join('');
   } catch (e) {
@@ -417,6 +500,14 @@ function showLoginError(msg) {
   const el = document.getElementById('loginError');
   el.textContent = msg;
   el.classList.remove('hidden');
+}
+
+function switchLoginTab(which) {
+  document.getElementById('loginError').classList.add('hidden');
+  document.getElementById('tabCrew').classList.toggle('active', which === 'crew');
+  document.getElementById('tabOffice').classList.toggle('active', which === 'office');
+  document.getElementById('crewLoginPanel').classList.toggle('hidden', which !== 'crew');
+  document.getElementById('officeLoginPanel').classList.toggle('hidden', which !== 'office');
 }
 
 async function doLogin() {
@@ -432,10 +523,39 @@ async function doLogin() {
     CURRENT_USER = r.user;
     CURRENT_VESSEL = r.vessel;
     CURRENT_VESSEL_NAME = r.vesselName;
+    CURRENT_ROLE = r.role || 'crew';
+    CURRENT_USER_ID = null;
+    CURRENT_EMAIL = null;
+    CAN_SWITCH_VESSEL = false;
     document.getElementById('loginError').classList.add('hidden');
     await afterLogin();
   } catch (e) {
-    if (e.message === 'bad_password' || e.message === 'unknown_vessel') showLoginError('Wrong vessel or password. Check with the Master.');
+    if (e.message === 'bad_password' || e.message === 'unknown_vessel') showLoginError('Wrong vessel or password. Check with the Master or office.');
+    else showLoginError('Login failed: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+}
+
+async function doUserLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginUserPassword').value;
+  if (!email) return showLoginError('Enter your email.');
+  if (!password) return showLoginError('Enter your password.');
+  const btn = document.getElementById('loginUserBtn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const r = await API.userLogin(email, password);
+    CURRENT_USER = r.user;
+    CURRENT_VESSEL = r.vessel;
+    CURRENT_ROLE = r.role;
+    CURRENT_EMAIL = r.email;
+    CAN_SWITCH_VESSEL = !!r.canSwitchVessel;
+    document.getElementById('loginError').classList.add('hidden');
+    await afterLogin();
+  } catch (e) {
+    if (e.message === 'bad_credentials') showLoginError('Wrong email or password.');
+    else if (e.message === 'account_disabled') showLoginError('Account is disabled. Contact the superintendent.');
+    else if (e.message === 'no_vessel_assigned') showLoginError('No vessel assigned to your account. Ask the superintendent.');
     else showLoginError('Login failed: ' + e.message);
     btn.disabled = false; btn.textContent = 'Sign in';
   }
@@ -446,6 +566,22 @@ async function afterLogin() {
   document.getElementById('mainApp').classList.remove('hidden');
   document.getElementById('userLabel').textContent = CURRENT_USER;
   document.getElementById('vesselBadge').textContent = ` — ${CURRENT_VESSEL}`;
+  // Role badge
+  const rb = document.getElementById('roleBadge');
+  rb.textContent = CURRENT_ROLE;
+  rb.className = 'role-badge ' + (CURRENT_ROLE === 'superintendent' ? 'super' : CURRENT_ROLE === 'master' ? 'master' : '');
+  rb.classList.toggle('hidden', CURRENT_ROLE === 'crew');
+  // Vessel switcher (super only)
+  if (CAN_SWITCH_VESSEL) {
+    try { ALL_VESSELS = await API.vessels(); } catch (e) {}
+    const switcher = document.getElementById('vesselSwitcher');
+    switcher.innerHTML = ALL_VESSELS.map(v => `<option value="${v.vessel}" ${v.vessel === CURRENT_VESSEL ? 'selected' : ''}>${esc(v.display_name)}</option>`).join('');
+    switcher.classList.remove('hidden');
+    document.getElementById('adminTab').classList.remove('hidden');
+  } else {
+    document.getElementById('vesselSwitcher').classList.add('hidden');
+    document.getElementById('adminTab').classList.add('hidden');
+  }
   showLoading(true);
   try {
     await Promise.all([fetchQuestions(), fetchWalkdowns(), fetchInspectionTarget()]);
@@ -458,13 +594,34 @@ async function afterLogin() {
   }
 }
 
+async function switchVessel(vessel) {
+  if (!vessel || vessel === CURRENT_VESSEL) return;
+  showLoading(true);
+  try {
+    const r = await API.switchVessel(vessel);
+    CURRENT_VESSEL = r.vessel;
+    CURRENT_VESSEL_NAME = r.vesselName;
+    document.getElementById('vesselBadge').textContent = ` — ${CURRENT_VESSEL}`;
+    await Promise.all([fetchWalkdowns(), fetchInspectionTarget()]);
+    render();
+    toast('Switched to ' + CURRENT_VESSEL);
+  } catch (e) {
+    toast('Switch failed: ' + e.message, true);
+  } finally {
+    showLoading(false);
+  }
+}
+
 async function doLogout() {
   if (!confirm('Sign out? Any unsaved typing will be lost (saved checkboxes are kept).')) return;
   stopSyncTimer();
   await API.logout();
   CURRENT_USER = null; CURRENT_VESSEL = null;
+  CURRENT_ROLE = 'crew'; CURRENT_USER_ID = null; CURRENT_EMAIL = null;
+  CAN_SWITCH_VESSEL = false;
   QUESTIONS = []; WALKDOWNS = [];
   document.getElementById('loginPassword').value = '';
+  document.getElementById('loginUserPassword').value = '';
   showLogin();
 }
 
@@ -660,6 +817,7 @@ function uniq(items, key) { return [...new Set(items.map(i => i[key]).filter(Boo
 function render() {
   if (state.view === 'home') renderHome();
   else if (state.view === 'walkdowns') renderWalkdownsView();
+  else if (state.view === 'admin') renderAdminView();
   else renderQuestionsView();
 }
 
@@ -1051,6 +1209,199 @@ function clearAllFilters() {
   clearScopeFilter();
 }
 
+async function renderAdminView() {
+  document.getElementById('mainArea').innerHTML = `
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>🚢 Fleet Overview</h3>
+        <p class="hint">Aggregate progress for every vessel in the fleet. Click "Open" to switch into that vessel's working view.</p>
+        <div id="fleetOverviewBody"><em>Loading…</em></div>
+      </div>
+
+      <div class="admin-card">
+        <h3>👥 Users</h3>
+        <p class="hint">Office staff and named accounts. Crew on board can also log in with the vessel password (no account needed). All edits made by named accounts are stamped with the user's name in the activity log.</p>
+        <div id="adminUsersBody"><em>Loading…</em></div>
+      </div>
+
+      <div class="admin-card">
+        <h3>➕ Add User</h3>
+        <p class="hint">Create an individual account for office staff, masters, or any crew member who wants a personal login.</p>
+        <div class="add-user-form">
+          <div class="field"><label>Email</label><input id="newUserEmail" type="email" placeholder="name@nsml.com" autocomplete="off"></div>
+          <div class="field"><label>Display name</label><input id="newUserName" type="text" placeholder="Full name or rank+name"></div>
+          <div class="field"><label>Temp password</label><input id="newUserPassword" type="text" placeholder="8+ chars, share with user"></div>
+          <div class="field"><label>Role</label><select id="newUserRole" onchange="onRoleChange()">
+            <option value="crew">Crew</option>
+            <option value="master">Master</option>
+            <option value="superintendent">Superintendent</option>
+          </select></div>
+          <div class="field" id="newUserVesselField"><label>Vessel</label><select id="newUserVessel"></select></div>
+          <button id="addUserBtn" onclick="doAddUser()">Add user</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>🔑 Vessel passwords (crew shared-password)</h3>
+        <p class="hint">Reset the shared password crew on board use. Change this any time without affecting individual user accounts.</p>
+        <div class="admin-actions">
+          ${ALL_VESSELS.map(v => `<button onclick="resetVesselPassword('${esc(v.vessel)}', '${esc(v.display_name)}')">Reset ${esc(v.display_name)} password</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>💾 Snapshots & exports</h3>
+        <p class="hint">Download the full state of any vessel's inspection prep as a JSON snapshot. Useful for audit, handover, or as a checkpoint before a major change.</p>
+        <div class="admin-actions">
+          ${ALL_VESSELS.map(v => `<button onclick="exportVessel('${esc(v.vessel)}')">⬇ Export ${esc(v.display_name)} snapshot</button>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Populate vessel dropdown in add-user form
+  document.getElementById('newUserVessel').innerHTML = ALL_VESSELS.map(v => `<option value="${v.vessel}">${esc(v.display_name)}</option>`).join('');
+  onRoleChange();
+
+  // Load fleet overview and users in parallel
+  try {
+    const [fleet, users] = await Promise.all([API.adminFleetOverview(), API.adminUsers()]);
+    renderFleetOverview(fleet);
+    renderAdminUsers(users);
+  } catch (e) {
+    toast('Admin load failed: ' + e.message, true);
+  }
+}
+
+function renderFleetOverview(fleet) {
+  document.getElementById('fleetOverviewBody').innerHTML = `
+    <table class="admin-fleet-table">
+      <thead><tr><th>Vessel</th><th>Inspection date</th><th>Port</th><th>Inspector</th><th>Sub-check progress</th><th>Last activity</th><th></th></tr></thead>
+      <tbody>
+        ${fleet.map(v => {
+          const pct = v.total_subchecks > 0 ? Math.round(v.checked_subchecks / v.total_subchecks * 100) : 0;
+          const last = v.last_activity ? new Date(v.last_activity).toLocaleString() : '—';
+          return `<tr>
+            <td><strong>${esc(v.vessel_name)}</strong><br><span style="font-size:0.78rem;color:var(--muted);">${esc(v.vessel)}</span></td>
+            <td>${v.target_date ? new Date(v.target_date).toLocaleDateString() : '—'}</td>
+            <td>${esc(v.port || '—')}</td>
+            <td>${esc(v.inspector_name || '—')}</td>
+            <td><div class="admin-progress"><div class="bar"><div style="width:${pct}%"></div></div>${v.checked_subchecks}/${v.total_subchecks} (${pct}%)</div></td>
+            <td>${last}</td>
+            <td><button onclick="switchVessel('${esc(v.vessel)}');setTimeout(()=>{state.view='home';document.querySelectorAll('.view-toggle button').forEach(b=>b.classList.toggle('active',b.dataset.view==='home'));render();},200)">Open</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderAdminUsers(users) {
+  if (users.length === 0) {
+    document.getElementById('adminUsersBody').innerHTML = '<p style="color:var(--muted);font-size:0.88rem;">No named user accounts yet. Add one below.</p>';
+    return;
+  }
+  document.getElementById('adminUsersBody').innerHTML = `
+    <table class="admin-users-table">
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Vessel scope</th><th>Active</th><th>Last login</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${users.map(u => `<tr>
+          <td><strong>${esc(u.display_name)}</strong></td>
+          <td style="font-family:ui-monospace,Menlo,monospace;font-size:0.82rem;">${esc(u.email)}</td>
+          <td><span class="pill-role ${esc(u.role)}">${esc(u.role)}</span></td>
+          <td>${esc(u.vessel_scope || 'all')}</td>
+          <td>${u.active ? '✓' : '<span class="pill-inactive">disabled</span>'}</td>
+          <td style="font-size:0.82rem;color:var(--muted);">${u.last_login_at ? new Date(u.last_login_at).toLocaleString() : 'never'}</td>
+          <td><div class="admin-actions">
+            <button onclick="resetUserPassword(${u.id}, '${esc(u.display_name)}')">Reset password</button>
+            <button onclick="toggleUserActive(${u.id}, ${!u.active})">${u.active ? 'Disable' : 'Enable'}</button>
+            ${u.id === CURRENT_USER_ID ? '' : `<button class="danger" onclick="deleteUser(${u.id}, '${esc(u.display_name)}')">Delete</button>`}
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function onRoleChange() {
+  const role = document.getElementById('newUserRole').value;
+  document.getElementById('newUserVesselField').style.display = role === 'superintendent' ? 'none' : '';
+}
+
+async function doAddUser() {
+  const email = document.getElementById('newUserEmail').value.trim();
+  const displayName = document.getElementById('newUserName').value.trim();
+  const password = document.getElementById('newUserPassword').value;
+  const role = document.getElementById('newUserRole').value;
+  const vesselScope = document.getElementById('newUserVessel').value;
+  if (!email || !displayName || !password) return toast('Email, name, password required', true);
+  if (password.length < 8) return toast('Password needs at least 8 chars', true);
+  const btn = document.getElementById('addUserBtn');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    await API.adminCreateUser({ email, displayName, password, role, vesselScope: role === 'superintendent' ? null : vesselScope });
+    toast('User added — share password with them privately');
+    document.getElementById('newUserEmail').value = '';
+    document.getElementById('newUserName').value = '';
+    document.getElementById('newUserPassword').value = '';
+    const users = await API.adminUsers();
+    renderAdminUsers(users);
+  } catch (e) {
+    if (e.message === 'email_exists') toast('Email already exists', true);
+    else toast('Add failed: ' + e.message, true);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add user';
+  }
+}
+
+async function resetUserPassword(id, name) {
+  const np = prompt(`New password for ${name} (8+ chars):`);
+  if (!np) return;
+  if (np.length < 8) return toast('Password needs at least 8 chars', true);
+  try {
+    await API.adminResetPassword(id, np);
+    toast('Password reset — share with user privately');
+  } catch (e) { toast('Reset failed: ' + e.message, true); }
+}
+
+async function toggleUserActive(id, active) {
+  try {
+    await API.adminUpdateUser(id, { active });
+    const users = await API.adminUsers();
+    renderAdminUsers(users);
+    toast(active ? 'User enabled' : 'User disabled');
+  } catch (e) { toast('Update failed: ' + e.message, true); }
+}
+
+async function deleteUser(id, name) {
+  if (!confirm(`Delete user ${name}? This cannot be undone (their activity log entries remain).`)) return;
+  try {
+    await API.adminDeleteUser(id);
+    const users = await API.adminUsers();
+    renderAdminUsers(users);
+    toast('User deleted');
+  } catch (e) { toast('Delete failed: ' + e.message, true); }
+}
+
+async function resetVesselPassword(vessel, name) {
+  const np = prompt(`New shared crew password for ${name} (6+ chars):\n\nAll crew using the old password will be signed out next time they refresh.`);
+  if (!np) return;
+  if (np.length < 6) return toast('Password too short', true);
+  try {
+    await API.adminResetVesselPassword(vessel, np);
+    toast(`${name} password reset`);
+  } catch (e) { toast('Reset failed: ' + e.message, true); }
+}
+
+async function exportVessel(vessel) {
+  toast('Downloading snapshot…');
+  // Hit the endpoint directly; browser will save based on Content-Disposition header
+  const a = document.createElement('a');
+  a.href = '/api/admin/export/' + encodeURIComponent(vessel);
+  a.download = '';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
 function renderQuestionsView() {
   const search = (document.getElementById('searchBox')?.value || '').toLowerCase();
   const filtered = QUESTIONS.filter(q => {
@@ -1131,6 +1482,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('loginBtn').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   document.getElementById('loginDisplayName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPassword').focus(); });
+  document.getElementById('loginUserBtn').addEventListener('click', doUserLogin);
+  document.getElementById('loginUserPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doUserLogin(); });
+  document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginUserPassword').focus(); });
+  document.getElementById('tabCrew').addEventListener('click', () => switchLoginTab('crew'));
+  document.getElementById('tabOffice').addEventListener('click', () => switchLoginTab('office'));
   document.querySelectorAll('.view-toggle button').forEach(b => {
     b.addEventListener('click', () => {
       document.querySelectorAll('.view-toggle button').forEach(x => x.classList.remove('active'));

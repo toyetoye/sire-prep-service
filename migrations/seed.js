@@ -187,12 +187,37 @@ async function main() {
     ON CONFLICT (vessel) DO NOTHING
   `);
 
+  // ============ Bootstrap initial superintendent (if env vars set) ============
+  const adminEmail = process.env.SEED_ADMIN_EMAIL;
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  const adminName = process.env.SEED_ADMIN_NAME || 'Superintendent';
+  let bootstrappedAdmin = false;
+  if (adminEmail && adminPassword) {
+    const existing = await pool.query('SELECT id FROM sire.users WHERE email = $1', [adminEmail.toLowerCase()]);
+    if (existing.rows.length === 0) {
+      const adminHash = await bcrypt.hash(adminPassword, 10);
+      await pool.query(`
+        INSERT INTO sire.users (email, display_name, password_hash, role, vessel_scope)
+        VALUES ($1, $2, $3, 'superintendent', NULL)
+      `, [adminEmail.toLowerCase(), adminName, adminHash]);
+      bootstrappedAdmin = true;
+    }
+  }
+
   await pool.end();
   console.log('\nSeed complete.');
-  console.log('Initial passwords:');
+  console.log('Initial vessel passwords (for crew on-board login):');
   console.log(`  AT   : ${atPw}`);
   console.log(`  AT10 : ${at10Pw}`);
-  console.log('\nIMPORTANT: change these immediately via the /api/auth/change-password endpoint, or directly in the DB.');
+  if (bootstrappedAdmin) {
+    console.log(`\nBootstrap superintendent created: ${adminEmail} (${adminName})`);
+    console.log('  Sign in via the "Office / Superintendent" option on the login screen.');
+  } else if (adminEmail) {
+    console.log(`\nSuperintendent ${adminEmail} already exists; not overwritten.`);
+  } else {
+    console.log('\nNo SEED_ADMIN_EMAIL set — no superintendent created. Add one later via the /api/admin/users API once you have a super, or set the env vars and re-run.');
+  }
+  console.log('\nIMPORTANT: change initial passwords immediately via the app.');
 }
 
 main().catch(err => {
