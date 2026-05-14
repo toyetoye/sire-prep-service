@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIRE 2.0 Inspection Prep</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #1e3c72; --primary-dark: #142755; --accent: #2a5298;
+  --bg: #f4f6fa; --card: #ffffff; --text: #1a202c; --muted: #6b7280;
+  --border: #e5e7eb; --ok: #16a34a; --warn: #f59e0b; --critical: #dc2626;
+  --info: #0284c7; --inprog: #ca8a04; --soft-bg: #f9fafb;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; font-size: 14px; }
+a { color: var(--accent); text-decoration: none; }
+.hidden { display: none !important; }
+
+/* LOGIN */
+.login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); }
+.login-box { background: var(--card); border-radius: 12px; padding: 2rem; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+.login-box h1 { font-size: 1.5rem; margin-bottom: 0.4rem; color: var(--primary); }
+.login-box p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.92rem; }
+.login-box label { display: block; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.35rem; }
+.login-box select, .login-box input { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; margin-bottom: 1rem; background: white; }
+.login-box button { width: 100%; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; }
+.login-box button:hover { background: var(--primary-dark); }
+.login-box button:disabled { opacity: 0.6; cursor: wait; }
+.login-error { background: #fef2f2; color: var(--critical); padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.8rem; border: 1px solid #fecaca; }
+.login-footer { font-size: 0.78rem; color: var(--muted); margin-top: 1rem; text-align: center; }
+
+/* HEADER */
+header { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.header-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.brand { font-size: 1.2rem; font-weight: 600; }
+.brand small { display: block; font-size: 0.72rem; opacity: 0.85; font-weight: 400; margin-top: 2px; }
+.header-controls { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; }
+.header-controls input { padding: 0.45rem 0.8rem; border: none; border-radius: 6px; font-size: 0.9rem; background: rgba(255,255,255,0.95); min-width: 200px; }
+.view-toggle { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 3px; display: inline-flex; }
+.view-toggle button { background: none; border: none; color: white; padding: 0.4rem 0.85rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
+.view-toggle button.active { background: white; color: var(--primary); }
+.user-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(0,0,0,0.2); padding: 0.35rem 0.7rem; border-radius: 16px; font-size: 0.8rem; }
+.user-pill button { background: none; border: none; color: white; opacity: 0.7; cursor: pointer; font-size: 0.85rem; }
+.user-pill button:hover { opacity: 1; }
+.sync-pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; opacity: 0.85; }
+.sync-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.sync-pill.syncing .dot { background: var(--warn); animation: pulse 1s infinite; }
+.sync-pill.error .dot { background: var(--critical); }
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+main { max-width: 1600px; margin: 1.25rem auto; padding: 0 1.5rem; }
+
+/* HOME VIEW */
+.home-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+.welcome-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-radius: 12px; padding: 1.5rem 1.75rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.welcome-text h2 { font-size: 1.4rem; margin-bottom: 0.3rem; }
+.welcome-text p { opacity: 0.85; font-size: 0.95rem; max-width: 600px; }
+.countdown { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 0.85rem 1.2rem; text-align: center; min-width: 220px; }
+.countdown .days { font-size: 2.4rem; font-weight: 700; line-height: 1; }
+.countdown .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; margin-top: 0.25rem; }
+.countdown input[type=date] { padding: 0.3rem 0.5rem; border: none; border-radius: 5px; font-size: 0.8rem; margin-top: 0.5rem; width: 100%; }
+
+.overall-bar { background: var(--card); border-radius: 10px; padding: 1.25rem; }
+.overall-bar h3 { font-size: 0.95rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+.progress-track { height: 22px; background: var(--soft-bg); border-radius: 11px; overflow: hidden; position: relative; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--ok) 0%, #10b981 100%); border-radius: 11px; transition: width 0.4s; }
+.progress-fill.critical { background: linear-gradient(90deg, var(--critical), #ef4444); }
+.progress-fill.warn { background: linear-gradient(90deg, var(--warn), #fbbf24); }
+.overall-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.75rem; font-size: 0.88rem; }
+.overall-stats span { color: var(--muted); }
+.overall-stats span strong { color: var(--text); }
+
+.section-title { font-size: 0.92rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0.5rem; }
+
+.next-up { background: var(--card); border-radius: 10px; padding: 1.25rem; }
+.next-up h3 { font-size: 1.05rem; margin-bottom: 0.7rem; }
+.next-up-list { display: flex; flex-direction: column; gap: 0.45rem; }
+.next-up-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0.8rem; background: var(--soft-bg); border-radius: 6px; cursor: pointer; }
+.next-up-item:hover { background: #eef2f7; }
+.next-up-item .id { font-family: ui-monospace, Menlo, monospace; font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+.next-up-item .desc { flex: 1; font-size: 0.88rem; }
+.next-up-item .pill { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 10px; background: #fef3c7; color: #92400e; white-space: nowrap; }
+
+.phases { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1rem; }
+.phase-card { background: var(--card); border-radius: 10px; padding: 1.2rem 1.35rem; cursor: pointer; transition: all 0.18s; border-left: 4px solid var(--border); }
+.phase-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.phase-card.active-phase { border-left-color: var(--ok); background: linear-gradient(to right, #f0fdf4 0%, var(--card) 8%); }
+.phase-card.upcoming-phase { border-left-color: var(--info); }
+.phase-card.past-phase { opacity: 0.75; border-left-color: var(--muted); }
+.phase-header { display: flex; justify-content: space-between; align-items: start; gap: 0.5rem; margin-bottom: 0.5rem; }
+.phase-num { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.phase-status-pill { font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 10px; background: var(--soft-bg); color: var(--muted); white-space: nowrap; }
+.phase-status-pill.active { background: #dcfce7; color: #166534; }
+.phase-status-pill.upcoming { background: #dbeafe; color: #1e40af; }
+.phase-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.15rem; }
+.phase-timing { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.65rem; }
+.phase-stats { display: flex; gap: 0.6rem; align-items: baseline; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+.phase-stats strong { color: var(--text); font-size: 1.05rem; }
+.phase-progress { height: 6px; background: var(--soft-bg); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+.phase-progress > div { height: 100%; background: var(--ok); transition: width 0.4s; }
+.phase-action { font-size: 0.82rem; color: var(--accent); font-weight: 500; margin-top: 0.3rem; }
+
+.tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
+.tile { background: var(--card); border-radius: 8px; padding: 0.85rem 1rem; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); }
+.tile:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
+.tile-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3rem; }
+.tile-value { font-size: 1.05rem; font-weight: 600; }
+.tile-bar { height: 4px; background: var(--soft-bg); border-radius: 2px; overflow: hidden; margin-top: 0.4rem; }
+.tile-bar > div { height: 100%; background: var(--ok); }
+.tile-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+.drill-schedule { background: var(--card); border-radius: 10px; padding: 1.25rem; }
+.drill-schedule h3 { font-size: 1.05rem; margin-bottom: 0.7rem; }
+.drill-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.5rem; }
+.drill-item { padding: 0.6rem 0.85rem; background: var(--soft-bg); border-radius: 6px; cursor: pointer; font-size: 0.85rem; border-left: 3px solid var(--info); }
+.drill-item:hover { background: #eef2f7; }
+.drill-item .target { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+.drill-item.done { border-left-color: var(--ok); background: #f0fdf4; }
+
+/* WALKDOWNS VIEW */
+.walkdowns-layout { display: grid; grid-template-columns: 270px 1fr; gap: 1.25rem; }
+aside.filters { background: var(--card); border-radius: 10px; padding: 1.25rem; height: fit-content; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; }
+aside h3 { font-size: 0.95rem; margin-bottom: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.filter-group { margin-bottom: 1.15rem; }
+.filter-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.35rem; }
+.filter-group select { width: 100%; padding: 0.45rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; background: white; }
+.filter-clear { background: none; border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; color: var(--muted); width: 100%; margin-top: 0.5rem; }
+.filter-clear:hover { background: var(--bg); }
+.filter-banner { background: #fef3c7; border-left: 4px solid var(--warn); padding: 0.7rem 0.9rem; border-radius: 6px; margin-bottom: 0.8rem; font-size: 0.85rem; }
+.filter-banner button { float: right; background: transparent; border: 1px solid #92400e; color: #92400e; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.75rem; cursor: pointer; }
+.btn-back { background: none; border: 1px solid var(--border); color: var(--accent); padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; margin-bottom: 0.5rem; width: 100%; }
+.btn-back:hover { background: var(--bg); }
+
+.content { display: flex; flex-direction: column; gap: 1rem; }
+.stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; }
+.stat { background: var(--card); border-radius: 8px; padding: 0.85rem; text-align: center; }
+.stat-num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+.stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.stat.ok .stat-num { color: var(--ok); } .stat.warn .stat-num { color: var(--warn); }
+.stat.crit .stat-num { color: var(--critical); } .stat.info .stat-num { color: var(--info); }
+.action-bar { display: flex; gap: 0.6rem; justify-content: flex-end; flex-wrap: wrap; align-items: center; }
+.btn { background: var(--primary); color: white; border: none; padding: 0.55rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; }
+.btn:hover { background: var(--primary-dark); }
+.btn.secondary { background: var(--card); color: var(--primary); border: 1px solid var(--border); }
+.btn.secondary:hover { background: var(--bg); }
+.results-info { color: var(--muted); font-size: 0.85rem; margin-right: auto; }
+
+.list { display: flex; flex-direction: column; gap: 0.6rem; }
+.item { background: var(--card); border-radius: 8px; padding: 1rem 1.1rem; border-left: 4px solid var(--border); transition: box-shadow 0.15s; }
+.item.status-open { border-left-color: var(--warn); }
+.item.status-in-progress { border-left-color: var(--inprog); }
+.item.status-closed { border-left-color: var(--ok); }
+.item.status-blocked { border-left-color: var(--critical); }
+.item.changed { background: linear-gradient(to right, #fffbeb 0%, var(--card) 25%); }
+.item-top { display: flex; justify-content: space-between; gap: 0.75rem; align-items: flex-start; }
+.item-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; color: var(--muted); }
+.item-id .qlink { color: var(--accent); cursor: pointer; }
+.item-id .qlink:hover { text-decoration: underline; }
+.item-title { font-size: 1.02rem; font-weight: 600; margin: 0.25rem 0; }
+.item-evidence { font-size: 0.92rem; color: var(--text); margin-bottom: 0.45rem; }
+.item-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); margin: 0.4rem 0; align-items: center; }
+.tag { background: var(--bg); padding: 0.18rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.tag.chapter { background: #dbeafe; color: #1e40af; }
+.tag.location { background: #fef3c7; color: #92400e; }
+.tag.role { background: #ede9fe; color: #6b21a8; }
+.tag.ctype { background: #d1fae5; color: #065f46; }
+.tag.roviq { background: #fce7f3; color: #9d174d; }
+.tag.flagged { background: #fef3c7; color: #92400e; }
+.tag.refined { background: #d1fae5; color: #065f46; }
+.tag.phase { background: var(--accent); color: white; }
+.criteria-box { background: #f8fafc; border-left: 3px solid var(--accent); padding: 0.75rem 0.9rem; margin-top: 0.6rem; font-size: 0.85rem; white-space: pre-wrap; border-radius: 0 6px 6px 0; }
+.criteria-box strong { color: var(--accent); }
+
+.subchecks { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.35rem; }
+.subcheck-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.45rem 0.65rem; background: var(--soft-bg); border-radius: 6px; transition: background 0.12s; flex-wrap: wrap; }
+.subcheck-row:hover { background: #eef2f7; }
+.subcheck-row.checked { background: #f0fdf4; }
+.subcheck-row.checked .subcheck-text { color: var(--muted); text-decoration: line-through; }
+.subcheck-checkbox { margin-top: 0.15rem; flex-shrink: 0; cursor: pointer; width: 18px; height: 18px; accent-color: var(--ok); }
+.subcheck-text { flex: 1; font-size: 0.87rem; line-height: 1.4; min-width: 200px; }
+.subcheck-meta { font-size: 0.7rem; color: var(--muted); }
+.subcheck-note-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+.subcheck-note-btn:hover { background: white; color: var(--accent); border-color: var(--accent); }
+.subcheck-note-input { display: none; width: 100%; padding: 0.35rem 0.5rem; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8rem; margin-top: 0.3rem; background: white; }
+.subcheck-note-input.show { display: block; }
+.progress-mini { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--muted); }
+.progress-mini .bar { width: 70px; height: 5px; background: var(--soft-bg); border-radius: 3px; overflow: hidden; }
+.progress-mini .bar > div { height: 100%; background: var(--ok); transition: width 0.3s; }
+.subchecks-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+.subchecks-header .label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.subchecks-header .actions { font-size: 0.78rem; color: var(--accent); cursor: pointer; }
+
+.item-bottom { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1.4fr 2fr; gap: 0.5rem; }
+.item-bottom > div { display: flex; flex-direction: column; gap: 0.2rem; }
+.item-bottom label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.item-bottom select, .item-bottom input { padding: 0.35rem 0.5rem; border: 1px solid var(--border); border-radius: 5px; font-size: 0.83rem; background: white; }
+.item-footer { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; text-align: right; font-style: italic; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 200; align-items: flex-start; justify-content: flex-end; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; width: min(820px, 100%); height: 100%; overflow-y: auto; padding: 0; animation: slideIn 0.18s ease-out; }
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.modal-header { background: var(--primary); color: white; padding: 1.25rem 1.5rem; position: sticky; top: 0; z-index: 10; }
+.modal-header h2 { font-size: 1.15rem; }
+.modal-header .close { background: rgba(0,0,0,0.3); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; position: absolute; right: 1rem; top: 1.1rem; font-size: 1.2rem; }
+.modal-body { padding: 1.5rem; font-size: 0.92rem; }
+.modal-body h3 { font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin: 1.4rem 0 0.5rem; }
+.modal-body h3:first-of-type { margin-top: 0; }
+.modal-body .field-block { background: #f9fafb; padding: 0.85rem 1rem; border-radius: 6px; white-space: pre-wrap; font-size: 0.88rem; }
+.modal-body .field-block.negobs { background: #fef2f2; border-left: 3px solid var(--critical); }
+.modal-body .field-block.evidence { background: #f0fdf4; border-left: 3px solid var(--ok); }
+.modal-body .field-block.guidance { background: #eff6ff; border-left: 3px solid var(--info); }
+.modal-body .linked-walkdowns { display: flex; flex-direction: column; gap: 0.5rem; }
+.modal-body .wd-mini { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; }
+
+.qview-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.qview-item { background: var(--card); border-radius: 8px; padding: 1rem 1.1rem; border-left: 4px solid var(--accent); cursor: pointer; }
+.qview-item:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.07); }
+
+.pagination { display: flex; justify-content: center; gap: 0.4rem; margin-top: 1rem; flex-wrap: wrap; padding-bottom: 2rem; }
+.pagination button { background: var(--card); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem; }
+.pagination button.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--ok); color: white; padding: 0.7rem 1.2rem; border-radius: 6px; opacity: 0; transition: opacity 0.3s; z-index: 300; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.toast.show { opacity: 1; }
+.toast.error { background: var(--critical); }
+
+.loading-overlay { position: fixed; inset: 0; background: rgba(244, 246, 250, 0.92); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { background: var(--card); padding: 3rem; text-align: center; color: var(--muted); border-radius: 8px; }
+
+@media (max-width: 900px) {
+  main { padding: 0 0.75rem; }
+  .walkdowns-layout { grid-template-columns: 1fr; }
+  aside.filters { position: static; max-height: none; }
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .item-bottom { grid-template-columns: 1fr; }
+  .header-controls input { min-width: 140px; }
+  .welcome-card { flex-direction: column; align-items: stretch; }
+  .countdown { min-width: 0; }
+}
+@media print {
+  header, aside, .action-bar, .item-bottom, .pagination, .toast, .view-toggle, .welcome-card, .phases, .tile-grid, .drill-schedule, .login-screen, .loading-overlay { display: none !important; }
+  body { background: white; }
+  .item { page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; margin-bottom: 0.5rem; }
+  .walkdowns-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== LOGIN SCREEN ====== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <h1>🚢 SIRE 2.0 Inspection Prep</h1>
+    <p>Multi-user inspection preparation for NSML LPG fleet. Pick your vessel, enter the shared crew password, and identify yourself so we know who ticked which box.</p>
+    <div id="loginError" class="login-error hidden"></div>
+    <label>Vessel</label>
+    <select id="loginVessel"></select>
+    <label>Your Name / Rank (e.g. "Master Adeyemi" or "C/O")</label>
+    <input id="loginDisplayName" type="text" placeholder="e.g. C/O Okafor" maxlength="80" autocomplete="name">
+    <label>Vessel Password</label>
+    <input id="loginPassword" type="password" placeholder="Shared crew password" autocomplete="current-password">
+    <button id="loginBtn">Sign in</button>
+    <div class="login-footer">Forgot the password? Ask the Master. Master can change it from inside the app.</div>
+  </div>
+</div>
+
+<!-- ====== MAIN APP ====== -->
+<div id="mainApp" class="hidden">
+  <header>
+    <div class="header-row">
+      <div class="brand">
+        🚢 SIRE 2.0 Inspection Prep <span id="vesselBadge"></span>
+        <small>Phased workflow · 318 OCIMF questions · 950 walkdowns · ~4,800 atomic checkpoints</small>
+      </div>
+      <div class="header-controls">
+        <input type="search" id="searchBox" placeholder="Search topic, equipment, evidence...">
+        <div class="view-toggle">
+          <button data-view="home" class="active">🏠 Home</button>
+          <button data-view="walkdowns">Walkdowns</button>
+          <button data-view="questions">OCIMF Reference</button>
+        </div>
+        <span class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">synced</span></span>
+        <span class="user-pill" id="userPill">
+          <span id="userLabel"></span>
+          <button onclick="doLogout()" title="Sign out">⤴</button>
+        </span>
+      </div>
+    </div>
+  </header>
+  <main id="mainArea"></main>
+</div>
+
+<!-- Question modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Question Detail</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+
+<!-- Toasts -->
+<div class="toast" id="toast">Saved</div>
+
+<script>
+// ============================================================
+// SIRE Prep — Frontend (multi-user, REST API backed)
+// ============================================================
+
+let QUESTIONS = [];
+let WALKDOWNS = [];
+let CURRENT_USER = null;
+let CURRENT_VESSEL = null;
+let CURRENT_VESSEL_NAME = null;
+let LAST_SYNC = { walkdownStateMax: null, subcheckStateMax: null, inspectionTargetMax: null };
+let INSPECTION_TARGET = {};
+let SYNC_TIMER = null;
+let SYNC_IN_PROGRESS = false;
+
+const PHASES = [
+  { id: "documentation", num: "Phase 1", title: "Documentation & Records",
+    timing: "T-14 → T-10", summary: "Pull all certificates, manuals, records. Verify validity. Address gaps before walkdowns.",
+    tMinStart: 14, tMinEnd: 10 },
+  { id: "photo", num: "Phase 2", title: "Photo Evidence",
+    timing: "T-10 → T-7", summary: "All Chapter 11 photo views. Daylight, calm conditions, clean deck.",
+    tMinStart: 10, tMinEnd: 7 },
+  { id: "drills", num: "Phase 3", title: "Drills & Crew Readiness",
+    timing: "T-9 → T-3", summary: "All 17 emergency drill scenarios. Scheduled, witnessed, recorded properly.",
+    tMinStart: 9, tMinEnd: 3 },
+  { id: "walkdown", num: "Phase 4", title: "Space Walkdowns",
+    timing: "Rolling (T-14 → T-1)", summary: "Bridge, CCR, ECR, Manifold, Compressor Room, Mooring stations.",
+    tMinStart: 14, tMinEnd: 1 },
+  { id: "briefings", num: "Phase 5", title: "Pre-Inspection Briefings",
+    timing: "T-3 → T-1", summary: "Mock Q&A on crew management. Inspector will test officer familiarity.",
+    tMinStart: 3, tMinEnd: 1 },
+  { id: "live", num: "Phase 6", title: "Day-of Live Tracking",
+    timing: "Day 0", summary: "Track inspector progress, capture observations in real time.",
+    tMinStart: 0, tMinEnd: 0 },
+];
+
+let state = { view: "home", page: 1, perPage: 25, phaseFilter: null, tileFilter: null };
+
+// ============================================================
+// API client
+// ============================================================
+const API = {
+  async _req(method, path, body) {
+    const res = await fetch(path, {
+      method, credentials: 'same-origin',
+      headers: body ? { 'Content-Type': 'application/json' } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (res.status === 401) { showLogin(); throw new Error('not_authenticated'); }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    return res.status === 204 ? null : res.json();
+  },
+  get(path) { return this._req('GET', path); },
+  post(path, body) { return this._req('POST', path, body); },
+  patch(path, body) { return this._req('PATCH', path, body); },
+  // Convenience
+  vessels() { return this.get('/api/auth/vessels'); },
+  login(vessel, password, displayName) { return this.post('/api/auth/login', { vessel, password, displayName }); },
+  logout() { return this.post('/api/auth/logout'); },
+  me() { return this.get('/api/auth/me'); },
+  questions() { return this.get('/api/questions'); },
+  walkdowns() { return this.get('/api/walkdowns'); },
+  inspectionTarget() { return this.get('/api/inspection-target'); },
+  setInspectionTarget(body) { return this.patch('/api/inspection-target', body); },
+  syncStamp() { return this.get('/api/sync-stamp'); },
+  patchWalkdown(id, body) { return this.patch('/api/walkdown/' + encodeURIComponent(id), body); },
+  patchSubcheck(wid, scid, body) { return this.patch(`/api/walkdown/${encodeURIComponent(wid)}/subcheck/${encodeURIComponent(scid)}`, body); },
+};
+
+// ============================================================
+// Boot / auth
+// ============================================================
+async function boot() {
+  try {
+    const me = await API.me();
+    if (me.authenticated) {
+      CURRENT_USER = me.user;
+      CURRENT_VESSEL = me.vessel;
+      await afterLogin();
+    } else {
+      showLogin();
+    }
+  } catch (e) {
+    showLogin();
+  }
+}
+
+async function showLogin() {
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  try {
+    const vessels = await API.vessels();
+    const sel = document.getElementById('loginVessel');
+    sel.innerHTML = vessels.map(v => `<option value="${v.vessel}">${esc(v.display_name)} (${v.vessel})</option>`).join('');
+  } catch (e) {
+    showLoginError('Could not reach the server. Check your internet and try again.');
+  }
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+async function doLogin() {
+  const vessel = document.getElementById('loginVessel').value;
+  const password = document.getElementById('loginPassword').value;
+  const displayName = document.getElementById('loginDisplayName').value.trim();
+  if (!displayName) return showLoginError('Please enter your name so others know who ticked what.');
+  if (!password) return showLoginError('Please enter the vessel password.');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const r = await API.login(vessel, password, displayName);
+    CURRENT_USER = r.user;
+    CURRENT_VESSEL = r.vessel;
+    CURRENT_VESSEL_NAME = r.vesselName;
+    document.getElementById('loginError').classList.add('hidden');
+    await afterLogin();
+  } catch (e) {
+    if (e.message === 'bad_password' || e.message === 'unknown_vessel') showLoginError('Wrong vessel or password. Check with the Master.');
+    else showLoginError('Login failed: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+}
+
+async function afterLogin() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('userLabel').textContent = CURRENT_USER;
+  document.getElementById('vesselBadge').textContent = ` — ${CURRENT_VESSEL}`;
+  showLoading(true);
+  try {
+    await Promise.all([fetchQuestions(), fetchWalkdowns(), fetchInspectionTarget()]);
+    render();
+    startSyncTimer();
+  } catch (e) {
+    toast('Could not load data: ' + e.message, true);
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function doLogout() {
+  if (!confirm('Sign out? Any unsaved typing will be lost (saved checkboxes are kept).')) return;
+  stopSyncTimer();
+  await API.logout();
+  CURRENT_USER = null; CURRENT_VESSEL = null;
+  QUESTIONS = []; WALKDOWNS = [];
+  document.getElementById('loginPassword').value = '';
+  showLogin();
+}
+
+// ============================================================
+// Data fetch + sync
+// ============================================================
+async function fetchQuestions() { QUESTIONS = await API.questions(); }
+async function fetchWalkdowns() {
+  WALKDOWNS = await API.walkdowns();
+  WALKDOWNS.forEach(w => { w.phase = classifyPhase(w); });
+}
+async function fetchInspectionTarget() {
+  INSPECTION_TARGET = await API.inspectionTarget();
+}
+
+function classifyPhase(w) {
+  if (w.ch === "11") return "photo";
+  if (w.sec === "5.1") return "drills";
+  if (w.ch === "3") return "briefings";
+  const roviq = (w.roviq || "").toLowerCase();
+  if (roviq.includes("documentation") || roviq.includes("pre-board") || roviq.includes("pre board") ||
+      w.ch === "1" || w.ch === "2" || w.ch === "6" || w.ch === "7") return "documentation";
+  return "walkdown";
+}
+
+function startSyncTimer() {
+  if (SYNC_TIMER) clearInterval(SYNC_TIMER);
+  SYNC_TIMER = setInterval(checkSync, 10000);
+}
+function stopSyncTimer() {
+  if (SYNC_TIMER) { clearInterval(SYNC_TIMER); SYNC_TIMER = null; }
+}
+
+async function checkSync() {
+  if (SYNC_IN_PROGRESS) return;
+  SYNC_IN_PROGRESS = true;
+  setSyncStatus('syncing');
+  try {
+    const stamp = await API.syncStamp();
+    const stale = (stamp.walkdownStateMax !== LAST_SYNC.walkdownStateMax) ||
+                  (stamp.subcheckStateMax !== LAST_SYNC.subcheckStateMax) ||
+                  (stamp.inspectionTargetMax !== LAST_SYNC.inspectionTargetMax);
+    if (stale) {
+      // Someone else updated — refetch (preserve local view)
+      await Promise.all([fetchWalkdowns(), fetchInspectionTarget()]);
+      LAST_SYNC = stamp;
+      render();
+    } else {
+      LAST_SYNC = stamp;
+    }
+    setSyncStatus('synced');
+  } catch (e) {
+    setSyncStatus('error');
+  } finally {
+    SYNC_IN_PROGRESS = false;
+  }
+}
+
+function setSyncStatus(s) {
+  const pill = document.getElementById('syncPill');
+  const label = document.getElementById('syncLabel');
+  pill.classList.remove('syncing', 'error');
+  if (s === 'syncing') { pill.classList.add('syncing'); label.textContent = 'syncing…'; }
+  else if (s === 'error') { pill.classList.add('error'); label.textContent = 'sync error'; }
+  else label.textContent = 'synced';
+}
+
+// ============================================================
+// Mutations (optimistic UI + API save)
+// ============================================================
+async function toggleSubcheck(wid, scid, checked) {
+  const w = WALKDOWNS.find(x => x.id === wid); if (!w) return;
+  const sc = w.subchecks.find(s => s.id === scid); if (!sc) return;
+  const prev = sc.checked;
+  sc.checked = checked;
+  sc.updatedBy = CURRENT_USER;
+  sc.updatedAt = new Date().toISOString();
+  renderWalkdownsContent(); // optimistic
+  try {
+    await API.patchSubcheck(wid, scid, { checked, note: sc.note });
+    toast('Saved');
+  } catch (e) {
+    sc.checked = prev;
+    renderWalkdownsContent();
+    toast('Save failed: ' + e.message, true);
+  }
+}
+
+async function toggleAllSubchecks(wid, checkAll) {
+  const w = WALKDOWNS.find(x => x.id === wid); if (!w) return;
+  const prev = w.subchecks.map(s => s.checked);
+  w.subchecks.forEach(s => { s.checked = checkAll; s.updatedBy = CURRENT_USER; });
+  renderWalkdownsContent();
+  try {
+    await Promise.all(w.subchecks.map(s => API.patchSubcheck(wid, s.id, { checked: checkAll, note: s.note })));
+    toast(checkAll ? 'All sub-checks ticked' : 'All cleared');
+  } catch (e) {
+    w.subchecks.forEach((s, i) => { s.checked = prev[i]; });
+    renderWalkdownsContent();
+    toast('Save failed', true);
+  }
+}
+
+async function setSubcheckNote(wid, scid, value) {
+  const w = WALKDOWNS.find(x => x.id === wid); if (!w) return;
+  const sc = w.subchecks.find(s => s.id === scid); if (!sc) return;
+  sc.note = value;
+  try { await API.patchSubcheck(wid, scid, { checked: sc.checked, note: value }); }
+  catch (e) { toast('Note save failed', true); }
+}
+
+async function updateWalkdown(id, field, value) {
+  const w = WALKDOWNS.find(x => x.id === id); if (!w) return;
+  const prev = w[field];
+  w[field] = value;
+  try {
+    await API.patchWalkdown(id, {
+      statusOverride: w.statusOverride || '',
+      severity: w.severity || '',
+      respOverride: w.respOverride || '',
+      notes: w.notes || '',
+    });
+    toast('Saved');
+  } catch (e) {
+    w[field] = prev;
+    renderWalkdownsContent();
+    toast('Save failed', true);
+  }
+}
+
+async function updateInspectionDate(iso) {
+  const prev = INSPECTION_TARGET.target_date;
+  INSPECTION_TARGET.target_date = iso || null;
+  renderHome();
+  try {
+    await API.setInspectionTarget({
+      target_date: iso || null,
+      inspector_name: INSPECTION_TARGET.inspector_name || null,
+      port: INSPECTION_TARGET.port || null,
+      cargo: INSPECTION_TARGET.cargo || null,
+      notes: INSPECTION_TARGET.notes || null,
+    });
+    toast('Inspection date set');
+  } catch (e) {
+    INSPECTION_TARGET.target_date = prev;
+    renderHome();
+    toast('Save failed', true);
+  }
+}
+
+// ============================================================
+// Utility
+// ============================================================
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('error', !!isErr);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+function showLoading(on) {
+  document.getElementById('loadingOverlay').classList.toggle('hidden', !on);
+}
+function deriveStatus(w) {
+  if (w.statusOverride === 'BLOCKED') return 'BLOCKED';
+  if (w.statusOverride === 'N/A') return 'CLOSED';
+  const total = w.subchecks.length;
+  const done = w.subchecks.filter(s => s.checked).length;
+  if (done === 0) return 'OPEN';
+  if (done === total) return 'CLOSED';
+  return 'IN PROGRESS';
+}
+function daysToInspection() {
+  if (!INSPECTION_TARGET.target_date) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const t = new Date(INSPECTION_TARGET.target_date); t.setHours(0,0,0,0);
+  return Math.round((t - today) / (1000 * 60 * 60 * 24));
+}
+function phaseStatus(phase) {
+  const dti = daysToInspection();
+  if (dti === null) return 'pending';
+  if (phase.id === 'live') return dti === 0 ? 'active' : (dti < 0 ? 'past' : 'upcoming');
+  if (dti < phase.tMinEnd) return 'past';
+  if (dti <= phase.tMinStart && dti >= phase.tMinEnd) return 'active';
+  return 'upcoming';
+}
+function uniq(items, key) { return [...new Set(items.map(i => i[key]).filter(Boolean))].sort(); }
+
+// ============================================================
+// Views
+// ============================================================
+function render() {
+  if (state.view === 'home') renderHome();
+  else if (state.view === 'walkdowns') renderWalkdownsView();
+  else renderQuestionsView();
+}
+
+function renderHome() {
+  const dti = daysToInspection();
+  const dateVal = INSPECTION_TARGET.target_date ? new Date(INSPECTION_TARGET.target_date).toISOString().slice(0,10) : '';
+  const all_status = WALKDOWNS.map(w => deriveStatus(w));
+  const closed = all_status.filter(s => s === 'CLOSED').length;
+  const inprog = all_status.filter(s => s === 'IN PROGRESS').length;
+  const blocked = all_status.filter(s => s === 'BLOCKED').length;
+  const open = WALKDOWNS.length - closed - inprog - blocked;
+  const pct = WALKDOWNS.length ? Math.round(closed / WALKDOWNS.length * 100) : 0;
+
+  const activePhase = PHASES.find(p => phaseStatus(p) === 'active') || PHASES[0];
+  const nextUpItems = WALKDOWNS.filter(w => w.phase === activePhase.id && deriveStatus(w) === 'OPEN').slice(0, 5);
+
+  const officerRoll = {};
+  WALKDOWNS.forEach(w => {
+    const r = w.respOverride || w.resp;
+    if (!officerRoll[r]) officerRoll[r] = { open: 0, closed: 0, total: 0 };
+    officerRoll[r].total++;
+    const ds = deriveStatus(w);
+    if (ds === 'CLOSED') officerRoll[r].closed++;
+    if (ds === 'OPEN') officerRoll[r].open++;
+  });
+  const officerOrder = ['Master', 'C/O', '2/O', '3/O', 'Chief Eng', '2nd Eng', '3rd Eng', 'Bosun'];
+
+  const spaceRoll = {};
+  WALKDOWNS.forEach(w => {
+    if (!spaceRoll[w.loc]) spaceRoll[w.loc] = { open: 0, closed: 0, total: 0 };
+    spaceRoll[w.loc].total++;
+    const ds = deriveStatus(w);
+    if (ds === 'CLOSED') spaceRoll[w.loc].closed++;
+    if (ds === 'OPEN') spaceRoll[w.loc].open++;
+  });
+  const spaceList = Object.keys(spaceRoll).sort((a,b) => spaceRoll[b].total - spaceRoll[a].total);
+
+  const drills = WALKDOWNS.filter(w => w.sec === '5.1');
+  const drillsByQ = {};
+  drills.forEach(d => { (drillsByQ[d.qid] = drillsByQ[d.qid] || []).push(d); });
+
+  document.getElementById('mainArea').innerHTML = `
+    <div class="home-grid">
+      <div class="welcome-card">
+        <div class="welcome-text">
+          <h2>SIRE 2.0 Inspection Preparation — ${esc(CURRENT_VESSEL)}</h2>
+          <p>Six phases tied to your inspection date. Phases auto-activate as the countdown moves. The OCIMF Reference tab shows you exactly what the inspector will ask.</p>
+        </div>
+        <div class="countdown">
+          ${dti === null ? `<div class="days">—</div><div class="label">Set inspection date</div>` :
+            dti > 0 ? `<div class="days">${dti}</div><div class="label">Days to inspection</div>` :
+            dti === 0 ? `<div class="days">TODAY</div><div class="label">Inspection day</div>` :
+            `<div class="days">+${-dti}</div><div class="label">Days past inspection</div>`}
+          <input type="date" value="${dateVal}" onchange="updateInspectionDate(this.value)">
+        </div>
+      </div>
+
+      <div class="overall-bar">
+        <h3>Overall Progress</h3>
+        <div class="progress-track"><div class="progress-fill ${pct < 25 ? 'critical' : pct < 75 ? 'warn' : ''}" style="width: ${pct}%"></div></div>
+        <div class="overall-stats">
+          <span><strong>${closed}</strong> closed</span>
+          <span><strong>${inprog}</strong> in progress</span>
+          <span><strong>${open}</strong> open</span>
+          <span><strong>${blocked}</strong> blocked</span>
+          <span><strong>${pct}%</strong> complete (${closed}/${WALKDOWNS.length})</span>
+        </div>
+      </div>
+
+      ${nextUpItems.length > 0 ? `
+      <div class="next-up">
+        <h3>📋 Next up — open items in current phase (${activePhase.title})</h3>
+        <div class="next-up-list">
+          ${nextUpItems.map(w => `
+            <div class="next-up-item" onclick="goToWalkdown('${esc(w.id)}')">
+              <span class="id">${esc(w.id)}</span>
+              <span class="desc">${esc(w.topic)} — ${esc((w.evidence||'').substring(0, 80))}${(w.evidence||'').length > 80 ? '...' : ''}</span>
+              <span class="pill">${esc(w.resp)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+      <h3 class="section-title">Preparation Phases — click a phase to focus there</h3>
+      <div class="phases">
+        ${PHASES.map(p => {
+          const items = WALKDOWNS.filter(w => w.phase === p.id);
+          const c = items.filter(w => deriveStatus(w) === 'CLOSED').length;
+          const pp = items.length ? Math.round(c / items.length * 100) : 0;
+          const status = phaseStatus(p);
+          return `
+            <div class="phase-card ${status}-phase" onclick="goToPhase('${p.id}')">
+              <div class="phase-header">
+                <span class="phase-num">${p.num}</span>
+                <span class="phase-status-pill ${status}">${status === 'active' ? '● ACTIVE NOW' : status === 'upcoming' ? 'Upcoming' : status === 'past' ? 'Past timing' : '—'}</span>
+              </div>
+              <div class="phase-title">${p.title}</div>
+              <div class="phase-timing">${p.timing}</div>
+              <div class="phase-stats"><strong>${c}</strong> / ${items.length} complete</div>
+              <div class="phase-progress"><div style="width: ${pp}%"></div></div>
+              <div class="phase-action">Open walkdowns →</div>
+              <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem;">${p.summary}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <h3 class="section-title">By Officer</h3>
+      <div class="tile-grid">
+        ${officerOrder.filter(o => officerRoll[o]).map(o => {
+          const r = officerRoll[o];
+          const pctO = r.total ? Math.round(r.closed / r.total * 100) : 0;
+          return `<div class="tile" onclick="goToTile('resp','${esc(o)}','${esc(o)}')">
+            <div class="tile-label">${esc(o)}</div>
+            <div class="tile-value">${r.open} open</div>
+            <div class="tile-bar"><div style="width: ${pctO}%"></div></div>
+            <div class="tile-sub">${r.closed}/${r.total} (${pctO}%)</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <h3 class="section-title">By Space</h3>
+      <div class="tile-grid">
+        ${spaceList.map(loc => {
+          const s = spaceRoll[loc];
+          const pctL = s.total ? Math.round(s.closed / s.total * 100) : 0;
+          return `<div class="tile" onclick="goToTile('loc','${esc(loc)}','${esc(loc)}')">
+            <div class="tile-label">${esc(loc)}</div>
+            <div class="tile-value">${s.open} open</div>
+            <div class="tile-bar"><div style="width: ${pctL}%"></div></div>
+            <div class="tile-sub">${s.closed}/${s.total} (${pctL}%)</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="drill-schedule">
+        <h3>🚨 Emergency Drill Schedule (Phase 3 · Section 5.1)</h3>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.7rem;">17 SOLAS / ISM mandatory drills. Click any to see the full evidence requirements and success criteria.</p>
+        <div class="drill-list">
+          ${Object.keys(drillsByQ).sort().map(qid => {
+            const ws = drillsByQ[qid];
+            const allClosed = ws.every(w => deriveStatus(w) === 'CLOSED');
+            const q = QUESTIONS.find(qq => qq.qid === qid);
+            const title = q ? q.short : qid;
+            return `<div class="drill-item ${allClosed ? 'done' : ''}" onclick="showQuestion('${qid}')">
+              <div><strong>${esc(qid)}</strong> — ${esc(title)}</div>
+              <div class="target">${ws.filter(w => deriveStatus(w) === 'CLOSED').length}/${ws.length} evidence items closed</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function goToPhase(phaseId) {
+  state.phaseFilter = phaseId; state.tileFilter = null;
+  state.view = 'walkdowns'; state.page = 1;
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === 'walkdowns'));
+  render();
+}
+function goToTile(field, value, label) {
+  state.phaseFilter = null; state.tileFilter = { field, value, label };
+  state.view = 'walkdowns'; state.page = 1;
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === 'walkdowns'));
+  render();
+}
+function goToWalkdown(id) {
+  state.phaseFilter = null; state.tileFilter = null;
+  state.view = 'walkdowns'; state.page = 1;
+  document.getElementById('searchBox').value = id;
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === 'walkdowns'));
+  render();
+}
+function goHome() {
+  state.phaseFilter = null; state.tileFilter = null;
+  state.view = 'home'; state.page = 1;
+  document.getElementById('searchBox').value = '';
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === 'home'));
+  render();
+}
+
+function getFilteredWalkdowns() {
+  const search = (document.getElementById('searchBox')?.value || '').toLowerCase();
+  let result = WALKDOWNS;
+  if (state.phaseFilter) result = result.filter(w => w.phase === state.phaseFilter);
+  if (state.tileFilter) {
+    const { field, value } = state.tileFilter;
+    if (field === 'resp') result = result.filter(w => (w.respOverride || w.resp) === value);
+    else result = result.filter(w => w[field] === value);
+  }
+  const ch = document.getElementById('chapterFilter')?.value || 'all';
+  const roviq = document.getElementById('roviqFilter')?.value || 'all';
+  const loc = document.getElementById('locationFilter')?.value || 'all';
+  const resp = document.getElementById('respFilter')?.value || 'all';
+  const ctype = document.getElementById('ctypeFilter')?.value || 'all';
+  const status = document.getElementById('statusFilter')?.value || 'all';
+  const sev = document.getElementById('sevFilter')?.value || 'all';
+  if (ch !== 'all') result = result.filter(w => w.ch === ch);
+  if (roviq !== 'all') result = result.filter(w => w.roviq === roviq);
+  if (loc !== 'all') result = result.filter(w => w.loc === loc);
+  if (resp !== 'all') result = result.filter(w => (w.respOverride || w.resp) === resp);
+  if (ctype !== 'all') result = result.filter(w => w.ctype === ctype);
+  if (status !== 'all') result = result.filter(w => deriveStatus(w) === status);
+  if (sev !== 'all') result = result.filter(w => w.severity === sev);
+  if (search) {
+    result = result.filter(w => {
+      const blob = [w.id, w.qid, w.topic, w.evidence, w.criteria, w.loc, w.roviq, w.notes].join(' ').toLowerCase();
+      return blob.includes(search);
+    });
+  }
+  return result;
+}
+
+function renderWalkdownsView() {
+  const phaseLabel = state.phaseFilter ? PHASES.find(p => p.id === state.phaseFilter)?.title : null;
+  const tileLabel = state.tileFilter?.label;
+  const banner = phaseLabel || tileLabel ? `
+    <div class="filter-banner">
+      Filtered to: <strong>${esc(phaseLabel || tileLabel)}</strong>
+      <button onclick="clearScopeFilter()">Clear focus</button>
+    </div>` : '';
+
+  document.getElementById('mainArea').innerHTML = `
+    <div class="walkdowns-layout">
+      <aside class="filters">
+        <button class="btn-back" onclick="goHome()">← Back to Home</button>
+        ${banner}
+        <h3>Filters</h3>
+        <div class="filter-group"><label>Chapter</label><select id="chapterFilter"><option value="all">All chapters</option></select></div>
+        <div class="filter-group"><label>ROVIQ Sequence</label><select id="roviqFilter"><option value="all">All stages</option></select></div>
+        <div class="filter-group"><label>Location</label><select id="locationFilter"><option value="all">All locations</option></select></div>
+        <div class="filter-group"><label>Responsible Officer</label><select id="respFilter"><option value="all">All officers</option></select></div>
+        <div class="filter-group"><label>Check Type</label><select id="ctypeFilter"><option value="all">All types</option></select></div>
+        <div class="filter-group"><label>Status</label>
+          <select id="statusFilter"><option value="all">All</option><option value="OPEN">Open</option><option value="IN PROGRESS">In Progress</option><option value="CLOSED">Closed</option><option value="BLOCKED">Blocked</option></select>
+        </div>
+        <div class="filter-group"><label>Severity</label>
+          <select id="sevFilter"><option value="all">Any</option><option value="CRITICAL">Critical</option><option value="MAJOR">Major</option><option value="MINOR">Minor</option></select>
+        </div>
+        <button class="filter-clear" onclick="clearAllFilters()">Clear All Filters</button>
+      </aside>
+      <div class="content">
+        <div class="stats" id="statsBar"></div>
+        <div class="action-bar">
+          <span class="results-info" id="resultsInfo"></span>
+          <button class="btn secondary" onclick="window.print()">🖨 Print</button>
+          <button class="btn secondary" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
+        <div id="resultsList"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  `;
+
+  // populate
+  const pop = (id, key) => {
+    const sel = document.getElementById(id);
+    uniq(WALKDOWNS, key).forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o); });
+  };
+  pop('chapterFilter','ch'); pop('roviqFilter','roviq'); pop('locationFilter','loc'); pop('respFilter','resp'); pop('ctypeFilter','ctype');
+  ['chapterFilter','roviqFilter','locationFilter','respFilter','ctypeFilter','statusFilter','sevFilter']
+    .forEach(id => document.getElementById(id).addEventListener('change', () => { state.page = 1; renderWalkdownsContent(); }));
+  renderWalkdownsContent();
+}
+
+function renderWalkdownsContent() {
+  const filtered = getFilteredWalkdowns();
+  document.getElementById('resultsInfo').textContent = `${filtered.length} walkdown${filtered.length===1?'':'s'}`;
+
+  const total = filtered.length;
+  const derived = filtered.map(w => deriveStatus(w));
+  const closed = derived.filter(s => s === 'CLOSED').length;
+  const ip = derived.filter(s => s === 'IN PROGRESS').length;
+  const open = derived.filter(s => s === 'OPEN').length;
+  const blocked = filtered.filter(w => w.statusOverride === 'BLOCKED').length;
+  const refined = filtered.filter(w => !w.flagged).length;
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-lbl">Total</div></div>
+    <div class="stat warn"><div class="stat-num">${open}</div><div class="stat-lbl">Open</div></div>
+    <div class="stat info"><div class="stat-num">${ip}</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat ok"><div class="stat-num">${closed}</div><div class="stat-lbl">Closed</div></div>
+    <div class="stat crit"><div class="stat-num">${blocked}</div><div class="stat-lbl">Blocked</div></div>
+    <div class="stat"><div class="stat-num">${refined}</div><div class="stat-lbl">Refined</div></div>
+  `;
+
+  if (filtered.length === 0) {
+    document.getElementById('resultsList').innerHTML = '<div class="empty-state">No walkdowns match these filters.</div>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  const start = (state.page - 1) * state.perPage;
+  const page = filtered.slice(start, start + state.perPage);
+
+  document.getElementById('resultsList').innerHTML = page.map(w => {
+    const status = deriveStatus(w);
+    const totalSc = w.subchecks.length;
+    const doneSc = w.subchecks.filter(s => s.checked).length;
+    const pct = totalSc ? Math.round(doneSc / totalSc * 100) : 0;
+    const lastEdit = w.updatedAt ? new Date(w.updatedAt).toLocaleString() : null;
+
+    return `<div class="item status-${status.toLowerCase().replace(' ','-')} ${w.notes||doneSc>0?'changed':''}">
+      <div class="item-top">
+        <div style="flex:1">
+          <div class="item-id">${esc(w.id)} · <span class="qlink" onclick="event.stopPropagation();showQuestion('${esc(w.qid)}')">OCIMF ${esc(w.qid)} ↗</span></div>
+          <div class="item-title">${esc(w.topic)}</div>
+          <div class="item-evidence">${esc(w.evidence)}</div>
+          <div class="item-meta">
+            <span class="tag phase">${esc(PHASES.find(p => p.id===w.phase)?.num || w.phase)}</span>
+            <span class="tag chapter">Ch ${esc(w.ch)}</span>
+            <span class="tag roviq">${esc(w.roviq)}</span>
+            <span class="tag location">📍 ${esc(w.loc)}</span>
+            <span class="tag role">${esc(w.respOverride||w.resp)}</span>
+            <span class="tag ctype">${esc(w.ctype)}</span>
+            ${w.flagged ? '<span class="tag flagged">⚠ Generic</span>' : '<span class="tag refined">✓ Refined</span>'}
+            <span class="progress-mini"><div class="bar"><div style="width:${pct}%"></div></div>${doneSc}/${totalSc}</span>
+          </div>
+        </div>
+      </div>
+      ${w.criteria ? `<div class="criteria-box"><strong>Inspection Criteria:</strong>\n${esc(w.criteria)}</div>` : ''}
+      <div class="subchecks">
+        <div class="subchecks-header">
+          <span class="label">Sub-checks (${doneSc} of ${totalSc} complete)</span>
+          <span class="actions" onclick="toggleAllSubchecks('${esc(w.id)}', ${doneSc < totalSc})">${doneSc < totalSc ? '✓ Check all' : '↶ Uncheck all'}</span>
+        </div>
+        ${w.subchecks.map(sc => `
+          <div class="subcheck-row ${sc.checked?'checked':''}">
+            <input type="checkbox" class="subcheck-checkbox" ${sc.checked?'checked':''} onchange="toggleSubcheck('${esc(w.id)}','${esc(sc.id)}', this.checked)">
+            <span class="subcheck-text">${esc(sc.text)}</span>
+            ${sc.updatedBy ? `<span class="subcheck-meta">${esc(sc.updatedBy)}</span>` : ''}
+            <button class="subcheck-note-btn" onclick="toggleNote('${esc(w.id)}','${esc(sc.id)}')">${sc.note?'📝':'+ Note'}</button>
+            <input type="text" class="subcheck-note-input ${sc.note?'show':''}" id="note-${esc(w.id)}-${esc(sc.id)}" value="${esc(sc.note)}" placeholder="Optional note..." onchange="setSubcheckNote('${esc(w.id)}','${esc(sc.id)}',this.value)">
+          </div>
+        `).join('')}
+      </div>
+      <div class="item-bottom">
+        <div><label>Override Status</label>
+          <select onchange="updateWalkdown('${esc(w.id)}','statusOverride',this.value)">
+            <option value="">(auto from sub-checks)</option>
+            <option ${w.statusOverride==='BLOCKED'?'selected':''}>BLOCKED</option>
+            <option ${w.statusOverride==='N/A'?'selected':''}>N/A</option>
+          </select>
+        </div>
+        <div><label>Severity if Open</label>
+          <select onchange="updateWalkdown('${esc(w.id)}','severity',this.value)">
+            <option value="">—</option>
+            <option ${w.severity==='CRITICAL'?'selected':''}>CRITICAL</option>
+            <option ${w.severity==='MAJOR'?'selected':''}>MAJOR</option>
+            <option ${w.severity==='MINOR'?'selected':''}>MINOR</option>
+          </select>
+        </div>
+        <div><label>Walkdown Notes / Defects</label>
+          <input type="text" placeholder="Findings or follow-up..." value="${esc(w.notes||'')}" onchange="updateWalkdown('${esc(w.id)}','notes',this.value)">
+        </div>
+      </div>
+      ${lastEdit ? `<div class="item-footer">Last edited by ${esc(w.updatedBy || 'unknown')} at ${esc(lastEdit)}</div>` : ''}
+    </div>`;
+  }).join('');
+  renderPagination(filtered.length);
+}
+
+function toggleNote(wid, scid) {
+  const input = document.getElementById(`note-${wid}-${scid}`);
+  if (input) { input.classList.toggle('show'); if (input.classList.contains('show')) input.focus(); }
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / state.perPage);
+  const el = document.getElementById('pagination'); if (!el) return;
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  let html = '';
+  if (state.page > 1) html += `<button onclick="goTo(${state.page-1})">‹ Prev</button>`;
+  const start = Math.max(1, state.page - 3);
+  const end = Math.min(pages, state.page + 3);
+  if (start > 1) html += `<button onclick="goTo(1)">1</button>` + (start > 2 ? '<button disabled>…</button>' : '');
+  for (let i = start; i <= end; i++) html += `<button class="${i===state.page?'active':''}" onclick="goTo(${i})">${i}</button>`;
+  if (end < pages) html += (end < pages-1 ? '<button disabled>…</button>' : '') + `<button onclick="goTo(${pages})">${pages}</button>`;
+  if (state.page < pages) html += `<button onclick="goTo(${state.page+1})">Next ›</button>`;
+  el.innerHTML = html;
+}
+function goTo(p) { state.page = p; renderWalkdownsContent(); window.scrollTo(0, 0); }
+function clearScopeFilter() { state.phaseFilter = null; state.tileFilter = null; state.page = 1; render(); }
+function clearAllFilters() {
+  ['chapterFilter','roviqFilter','locationFilter','respFilter','ctypeFilter','statusFilter','sevFilter'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = 'all';
+  });
+  document.getElementById('searchBox').value = '';
+  clearScopeFilter();
+}
+
+function renderQuestionsView() {
+  const search = (document.getElementById('searchBox')?.value || '').toLowerCase();
+  const filtered = QUESTIONS.filter(q => {
+    if (!search) return true;
+    const blob = [q.qid, q.short, q.qtext, q.obj, q.evidence, q.negobs].join(' ').toLowerCase();
+    return blob.includes(search);
+  });
+  const wdCounts = {};
+  WALKDOWNS.forEach(w => { wdCounts[w.qid] = (wdCounts[w.qid]||0) + 1; });
+
+  document.getElementById('mainArea').innerHTML = `
+    <div class="walkdowns-layout">
+      <aside class="filters">
+        <button class="btn-back" onclick="goHome()">← Back to Home</button>
+        <h3>About</h3>
+        <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem;">Canonical OCIMF SIRE 2.0 question library. Click any question to see Objective, Inspection Guidance, Expected Evidence, and Negative Observation Grounds.</p>
+      </aside>
+      <div class="content">
+        <div class="results-info">${filtered.length} OCIMF questions</div>
+        <div class="qview-list">${filtered.map(q => `
+          <div class="qview-item" onclick="showQuestion('${esc(q.qid)}')">
+            <div style="font-family: ui-monospace, Menlo, monospace; font-size: 0.8rem; color: var(--muted);">OCIMF ${esc(q.qid)} · Ch ${esc(q.ch)} · ROVIQ: ${esc(q.roviq)}</div>
+            <div style="font-size: 1.02rem; font-weight: 600; margin: 0.25rem 0;">${esc(q.short || (q.qtext||'').split('\n')[0].substring(0, 100))}</div>
+            <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.45rem;">${wdCounts[q.qid]||0} linked walkdown${(wdCounts[q.qid]||0)===1?'':'s'} · Vessel types: ${esc(q.types)}</div>
+          </div>
+        `).join('')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function showQuestion(qid) {
+  const q = QUESTIONS.find(x => x.qid === qid); if (!q) return;
+  const linkedW = WALKDOWNS.filter(w => w.qid === qid);
+  const closedCount = linkedW.filter(w => deriveStatus(w) === 'CLOSED').length;
+  document.getElementById('modalTitle').innerHTML = `OCIMF ${esc(qid)} · Ch ${esc(q.ch)}`;
+  document.getElementById('modalBody').innerHTML = `
+    <h3>Short Title</h3><div class="field-block"><strong>${esc(q.short)}</strong></div>
+    <h3>Full Question</h3><div class="field-block">${esc(q.qtext)}</div>
+    <h3>Vessel Types & ROVIQ Sequence</h3><div class="field-block">${esc(q.types)}<br><em>ROVIQ Stage:</em> ${esc(q.roviq)}</div>
+    <h3>Objective</h3><div class="field-block">${esc(q.obj)}</div>
+    ${q.guide ? `<h3>Inspection Guidance</h3><div class="field-block guidance">${esc(q.guide)}</div>` : ''}
+    ${q.actions ? `<h3>Suggested Inspector Actions</h3><div class="field-block guidance">${esc(q.actions)}</div>` : ''}
+    ${q.evidence ? `<h3>Expected Evidence</h3><div class="field-block evidence">${esc(q.evidence)}</div>` : ''}
+    ${q.negobs ? `<h3>⚠ Potential Grounds for Negative Observation</h3><div class="field-block negobs">${esc(q.negobs)}</div>` : ''}
+    <h3>Linked Walkdowns (${linkedW.length}, ${closedCount} closed)</h3>
+    <div class="linked-walkdowns">${linkedW.map(w => `<div class="wd-mini"><strong>${esc(w.id)}</strong> [${esc(deriveStatus(w))}] — ${esc(w.evidence)}</div>`).join('')}</div>
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+function exportCSV() {
+  const filtered = state.view === 'walkdowns' ? getFilteredWalkdowns() : QUESTIONS;
+  let csv, name;
+  if (state.view === 'walkdowns') {
+    csv = 'walkdown_id,linked_question_id,chapter,phase,roviq,location,responsible,check_type,topic,evidence_item,detailed_criteria,derived_status,sub_checks_done,sub_checks_total,severity,notes,sub_check_notes\n';
+    csv += filtered.map(w => {
+      const done = w.subchecks.filter(s=>s.checked).length;
+      const scNotes = w.subchecks.filter(s=>s.note).map(s=>`${s.id}:${s.note}`).join(' | ');
+      return [w.id,w.qid,w.ch,w.phase,w.roviq,w.loc,w.respOverride||w.resp,w.ctype,w.topic,w.evidence,w.criteria,deriveStatus(w),done,w.subchecks.length,w.severity,w.notes,scNotes].map(c => `"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',');
+    }).join('\n');
+    name = `SIRE_walkdowns_${CURRENT_VESSEL}_${new Date().toISOString().split('T')[0]}.csv`;
+  } else {
+    csv = 'question_id,chapter,short,question,roviq,objective,expected_evidence,negative_observation_grounds\n';
+    csv += filtered.map(q => [q.qid,q.ch,q.short,q.qtext,q.roviq,q.obj,q.evidence,q.negobs].map(c => `"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    name = `SIRE_questions_${new Date().toISOString().split('T')[0]}.csv`;
+  }
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+}
+
+// ============================================================
+// Init
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('loginDisplayName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPassword').focus(); });
+  document.querySelectorAll('.view-toggle button').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.view-toggle button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      state.view = b.dataset.view; state.page = 1;
+      if (state.view !== 'walkdowns') { state.phaseFilter = null; state.tileFilter = null; }
+      render();
+    });
+  });
+  document.getElementById('searchBox').addEventListener('input', () => {
+    state.page = 1;
+    if (state.view === 'walkdowns') renderWalkdownsContent();
+    else if (state.view === 'questions') renderQuestionsView();
+  });
+  boot();
+});
+</script>
+</body>
+</html>
