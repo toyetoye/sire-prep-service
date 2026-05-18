@@ -23,10 +23,34 @@ const pool = new Pool({
        ? { rejectUnauthorized: false }
        : false,
   max: 10,
-  idleTimeoutMillis: 30000,
+  // Drop idle clients BEFORE Railway's proxy does (idle TCP gets killed
+  // around 30-60s). 25s gives us margin.
+  idleTimeoutMillis: 25000,
+  // Cap how long a brand-new connection can take to come up.
+  connectionTimeoutMillis: 10000,
+  // Tell the OS to send TCP keepalives on idle sockets so dead connections
+  // are detected fast instead of being discovered only when the next query runs.
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
 });
 
-pool.on('error', err => console.error('Postgres pool error:', err));
+// Pool-level error: an IDLE client died (e.g. Railway dropped it). Without
+// this handler Node turns the error into an uncaught exception and crashes
+// the whole service. Logging + continuing is the right thing — the next
+// query just pulls a fresh client from the pool.
+pool.on('error', err => {
+  console.error('[pg pool] idle client error (non-fatal):', err.message);
+});
+
+// Last-resort safety nets so a stray DB error never takes the service down.
+// We log and keep serving — Express route handlers already have their own
+// try/catch around queries.
+process.on('uncaughtException', err => {
+  console.error('[uncaughtException]', err && err.stack ? err.stack : err);
+});
+process.on('unhandledRejection', err => {
+  console.error('[unhandledRejection]', err && err.stack ? err.stack : err);
+});
 
 // =========================================================
 // Middleware
